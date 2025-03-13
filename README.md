@@ -7,7 +7,7 @@
 # USE
 Start container:
 ```sh 
-docker run -p 8080:80 -e VITE_DOMAIN_PROXY_URL='YOUR_PROXY_DOMAIN' duelistdev/ton-proxy-frontend
+docker run -d -p 8080:80 -e VITE_DOMAIN_PROXY_URL='YOUR_PROXY_DOMAIN' duelistdev/ton-proxy-frontend
 ```
 
 <!-- Badges -->
