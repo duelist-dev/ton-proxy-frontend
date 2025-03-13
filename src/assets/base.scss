@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+* {
+    font-family: Inter, Helvetica, Arial, sans-serif;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+html, body {
+    height: 100%;
+    background: var(--background-page);
+    transition: background var(--transition-default);
+}
+
+#app {
+    height: 100%;
+}
+
+a {
+    color: var(--accent-default);
+    word-break: break-word;
+    text-decoration: none;
+    transition: color var(--transition-default);
+    &:hover {
+        color: var(--accent-hover);
+    }
+}
