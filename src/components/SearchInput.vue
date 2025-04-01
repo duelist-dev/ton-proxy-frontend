@@ -5,8 +5,8 @@ import CloseSvg from '@/assets/icons/close.svg?component'
 import { onMounted, ref } from 'vue'
 import { useElementBounding, useStorage } from '@vueuse/core'
 import { vResizeObserver } from '@vueuse/components'
-import { openDomain } from '@/utils/domain.ts'
 import { wait } from '@/utils/helpers.ts'
+import { useConfig } from '@/utils/useConfig.ts'
 
 const search = ref('')
 const searchContainer = ref(null)
@@ -18,8 +18,11 @@ const searchSuggestions = ref(null)
 const isOpenSuggestions = ref(false)
 const suggestions = useStorage('suggestions', new Set())
 
+const config = useConfig()
+const DOMAIN_PROXY_URL = config.get('VITE_DOMAIN_PROXY_URL')
+
 onMounted(() => {
-  focusSearch();
+  focusSearch()
 })
 
 const domainToString = (domain: string) => {
@@ -50,7 +53,7 @@ const validateSearch = (event: InputEvent) => {
 }
 
 const focusSearch = () => {
-  (searchInput.value! as HTMLInputElement).focus();
+  ;(searchInput.value! as HTMLInputElement).focus()
 }
 
 const handleSearch = async (event: InputEvent) => {
@@ -107,36 +110,37 @@ const deleteSuggestion = (value: string) => {
 const onClickSuggestion = (value: string, event: Event) => {
   if (
     event &&
-    (event.target as HTMLElement).classList.contains('search-container_suggestions-container_item-reset-icon')
+    (event.target as HTMLElement).classList.contains(
+      'search-container_suggestions-container_item-reset-icon',
+    )
   ) {
-    event.preventDefault();
+    event.preventDefault()
   } else {
-    goToDomain(value);
+    addSuggestion(value)
+    resetSearch()
   }
 }
 
-const goToDomain = (value: string) => {
-  openDomain(value)
-  addSuggestion(value)
-  resetSearch()
-}
-
 const onEnterSearch = () => {
-  if (search.value.length >= 3) {
-    goToDomain(search.value)
+  if (search.value.length >= 4) {
+    window.open(`https://${search.value}.${DOMAIN_PROXY_URL}`, '_blank')
+    addSuggestion(search.value)
+    resetSearch()
   }
 }
 
 const onFocusSearch = () => {
-  isOpenSuggestions.value = true;
-  document.addEventListener('click', handleClickOutside);
+  isOpenSuggestions.value = true
+  document.addEventListener('click', handleClickOutside)
 }
 
-
 const handleClickOutside = (event: Event) => {
-  if (searchContainer.value && !(searchContainer.value as HTMLElement).contains(event.target as HTMLElement)) {
+  if (
+    searchContainer.value &&
+    !(searchContainer.value as HTMLElement).contains(event.target as HTMLElement)
+  ) {
     isOpenSuggestions.value = false
-    document.removeEventListener('click', handleClickOutside);
+    document.removeEventListener('click', handleClickOutside)
   }
 }
 </script>
@@ -159,8 +163,22 @@ const handleClickOutside = (event: Event) => {
         @focus="onFocusSearch()"
       />
       <div ref="searchSuffix" class="search-container_input-container_suffix">.ton</div>
-      <CloseSvg ref="resetIcon" v-if="search.length" class="search-container_input-container_reset-icon" @click="async () => {await wait(0); resetSearch()}" />
-      <div ref="suffixHelper" v-text="domainToString(search)" class="search-container_input-container_suffix-helper"></div>
+      <CloseSvg
+        ref="resetIcon"
+        v-if="search.length"
+        class="search-container_input-container_reset-icon"
+        @click="
+          async () => {
+            await wait(0)
+            resetSearch()
+          }
+        "
+      />
+      <div
+        ref="suffixHelper"
+        v-text="domainToString(search)"
+        class="search-container_input-container_suffix-helper"
+      ></div>
     </div>
 
     <transition name="fade">
@@ -169,10 +187,12 @@ const handleClickOutside = (event: Event) => {
         v-if="isOpenSuggestions && suggestions.size"
         class="search-container_suggestions-container"
       >
-        <button
+        <a
           class="search-container_suggestions-container_item"
+          target="_blank"
           v-for="suggestion of prepareSuggestions()"
           @click="onClickSuggestion(suggestion, $event)"
+          :href="`https://${suggestion}.${DOMAIN_PROXY_URL}`"
           :key="suggestion"
         >
           <HistorySvg class="search-container_suggestions-container_item-history-icon" />
@@ -181,9 +201,14 @@ const handleClickOutside = (event: Event) => {
           </div>
           <CloseSvg
             class="search-container_suggestions-container_item-reset-icon"
-            @click="async () => {await wait(0); deleteSuggestion(suggestion)}"
+            @click="
+              async () => {
+                await wait(0)
+                deleteSuggestion(suggestion)
+              }
+            "
           />
-        </button>
+        </a>
       </div>
     </transition>
   </div>
@@ -318,7 +343,7 @@ const handleClickOutside = (event: Event) => {
     }
 
     &_item {
-      width: 100%;
+      width: auto;
       cursor: default;
       padding: 10px 12px;
       gap: 16px;

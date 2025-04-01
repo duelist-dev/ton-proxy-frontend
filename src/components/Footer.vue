@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { prepareDomain } from '@/utils/domain.ts'
+import { useConfig } from '@/utils/useConfig.ts'
+
+const config = useConfig();
+const DOMAIN_PROXY_URL = config.get('VITE_DOMAIN_PROXY_URL')
+
 </script>
 
 <template>
@@ -8,7 +12,7 @@ import { prepareDomain } from '@/utils/domain.ts'
     <div class="copyrights">
       <div class="info-links">
         <div class="info-links__no-link">
-          <span>Developed by</span> <a :href="prepareDomain('duelist')" rel="noreferrer noopener">Duelist</a>
+          <span>Developed by</span> <a :href="`https://duelist.${DOMAIN_PROXY_URL}`" rel="noreferrer noopener">Duelist</a>
         </div>
       </div>
       <div class="social-links">
